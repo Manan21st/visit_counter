@@ -4,6 +4,10 @@ from datetime import datetime
 from ..core.redis_manager import RedisManager
 
 class VisitCounterService:
+    # Creating class attributes so all instances share the same dict and lock
+    visits_dict : Dict[str, int] = {}
+    lock = asyncio.Lock()
+
     def __init__(self):
         """Initialize the visit counter service with Redis manager"""
         self.redis_manager = RedisManager()
@@ -16,7 +20,11 @@ class VisitCounterService:
             page_id: Unique identifier for the page
         """
         # TODO: Implement visit count increment
-        pass
+        async with self.lock:
+            if page_id not in self.visits_dict:
+                self.visits_dict[page_id] = 0
+            
+            self.visits_dict[page_id] += 1
 
     async def get_visit_count(self, page_id: str) -> int:
         """
@@ -29,4 +37,5 @@ class VisitCounterService:
             Current visit count
         """
         # TODO: Implement getting visit count
-        return 0
+        async with self.lock:
+            return self.visits_dict.get(page_id, 0)
