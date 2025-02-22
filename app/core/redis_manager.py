@@ -11,12 +11,13 @@ class RedisManager:
         
         # Parse Redis nodes from comma-separated string
         redis_nodes = [node.strip() for node in settings.REDIS_NODES.split(",") if node.strip()]
-        self.consistent_hash = ConsistentHash(redis_nodes, settings.VIRTUAL_NODES)
+        # self.consistent_hash = ConsistentHash(redis_nodes, settings.VIRTUAL_NODES)
         
         # TODO: Initialize connection pools for each Redis node
         # 1. Create connection pools for each Redis node
         # 2. Initialize Redis clients
-        pass
+
+        self.redis_client = redis.Redis.from_url(redis_nodes[0]) # Using only 1 node, more are not required for now
 
     async def get_connection(self, key: str) -> redis.Redis:
         """
@@ -48,7 +49,8 @@ class RedisManager:
         # 1. Get the appropriate Redis connection
         # 2. Increment the counter
         # 3. Handle potential failures and retries
-        return 0
+
+        return self.redis_client.incrby(key, amount)
 
     async def get(self, key: str) -> Optional[int]:
         """
@@ -64,4 +66,5 @@ class RedisManager:
         # 1. Get the appropriate Redis connection
         # 2. Retrieve the value
         # 3. Handle potential failures and retries
-        return None
+        value = self.redis_client.get(key)
+        return int(value) if value is not None else 0

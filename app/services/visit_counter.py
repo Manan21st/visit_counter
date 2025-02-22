@@ -5,7 +5,6 @@ from ..core.redis_manager import RedisManager
 
 class VisitCounterService:
     # Creating class attributes so all instances share the same dict and lock
-    visits_dict : Dict[str, int] = {}
     lock = asyncio.Lock()
 
     def __init__(self):
@@ -21,10 +20,9 @@ class VisitCounterService:
         """
         # TODO: Implement visit count increment
         async with self.lock:
-            if page_id not in self.visits_dict:
-                self.visits_dict[page_id] = 0
-            
-            self.visits_dict[page_id] += 1
+            count = await self.redis_manager.increment(page_id,1)
+            return count
+
 
     async def get_visit_count(self, page_id: str) -> int:
         """
@@ -38,4 +36,5 @@ class VisitCounterService:
         """
         # TODO: Implement getting visit count
         async with self.lock:
-            return self.visits_dict.get(page_id, 0)
+            count = await self.redis_manager.get(page_id)
+            return count
