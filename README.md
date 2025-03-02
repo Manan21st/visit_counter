@@ -1,4 +1,4 @@
-# Visit Counter Assignment
+# Visit Counter
 
 This is a starter codebase for implementing a distributed visit counter service using FastAPI, Redis, and Docker.
 
@@ -21,25 +21,6 @@ The system is designed with the following components:
    ```
 4. The API will be available at `http://localhost:8000`
 
-## Implementation Tasks
-
-The codebase contains TODOs in various files that need to be implemented:
-
-1. **Consistent Hashing** (`app/core/consistent_hash.py`):
-   - Implement the consistent hashing ring
-   - Handle node addition and removal
-   - Implement key distribution
-
-2. **Redis Manager** (`app/core/redis_manager.py`):
-   - Implement connection pooling
-   - Handle Redis operations with retries
-   - Implement batch operations
-
-3. **Visit Counter Service** (`app/services/visit_counter.py`):
-   - Implement visit counting logic
-   - Implement batch processing
-   - Handle concurrent updates
-
 ## API Endpoints
 
 - `POST /visit/{page_id}`: Record a visit
@@ -51,10 +32,10 @@ You can test the API using curl or any HTTP client:
 
 ```bash
 # Record a visit
-curl -X POST http://localhost:8000/visit/123
+curl -X POST http://localhost:8000/api/v1/counter/visit/123
 
 # Get visit count
-curl http://localhost:8000/visits/123
+curl http://localhost:8000/api/v1/counter/visits/123
 ```
 
 ## File Structure
